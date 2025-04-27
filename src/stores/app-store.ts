@@ -78,6 +78,9 @@ type AppState = {
     updateGoalStatus: (goalId: string, completed: boolean) => void
     fetchDayData: (dayId: string) => Promise<void>
 
+    // Activity actions
+    addActivity: (activityData: { type: string, description: string, details?: string }) => Promise<boolean>
+
     // Reset error state
     clearError: () => void
 }
@@ -293,5 +296,62 @@ export const useAppStore = create<AppState>((set, get) => ({
     },
 
     // Clear error
-    clearError: () => set({error: null})
+    clearError: () => set({error: null}),
+
+    // Add activity function
+    addActivity: async (activityData) => {
+        const {dayId} = get();
+
+        if (!dayId) return false;
+
+        set({isLoading: true, error: null});
+
+        try {
+            // Use the API service instead of direct fetch
+            const data = await dayService.addActivity(
+                dayId,
+                activityData.type,
+                activityData.description,
+                activityData.details
+            );
+
+            if (data.success) {
+                // Update local state with the new activity
+                set(state => {
+                    // Create a new activity object
+                    const newActivity: Activity = {
+                        id: data.activity.id,
+                        type: activityData.type,
+                        description: activityData.description,
+                        status: 'COMPLETED'
+                    };
+
+                    // Add to the activities array in dayData
+                    return {
+                        dayData: state.dayData ? {
+                            ...state.dayData,
+                            activities: [newActivity, ...(state.dayData.activities || [])]
+                        } : null,
+                        isLoading: false
+                    };
+                });
+
+                return true;
+            }
+
+            set({
+                error: data.error || 'Failed to add activity',
+                isLoading: false
+            });
+            return false;
+
+        } catch (error) {
+            console.error('Error adding activity:', error);
+            set({
+                error: 'Failed to add activity',
+                isLoading: false
+            });
+            return false;
+        }
+    }
 })); 

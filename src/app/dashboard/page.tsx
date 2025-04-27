@@ -43,7 +43,7 @@ export default function DashboardPage() {
         const initializeDashboard = async () => {
             try {
                 setInitialLoading(true)
-                
+
                 // First check if day is already started
                 const isDayStarted = await checkDayStatus()
 
@@ -57,7 +57,7 @@ export default function DashboardPage() {
                 setInitialLoading(false)
             }
         }
-        
+
         if (user) {
             initializeDashboard()
         }
@@ -65,12 +65,12 @@ export default function DashboardPage() {
 
     const handleStartDay = async (initialGoals: Goal[]) => {
         if (!user) return
-        
+
         // Format goals for the API - pass simple objects with text property
         const formattedGoals = initialGoals.map(goal => ({
             text: goal.text
         }))
-        
+
         await startDay(formattedGoals)
     }
 
@@ -112,7 +112,7 @@ export default function DashboardPage() {
     }
 
     return (
-        <div className="container mx-auto max-w-7xl">
+        <div className="container mx-auto max-w-7xl h-full p-4">
             <AnimatePresence mode="wait">
                 {!dayStarted ? (
                     <motion.div
@@ -131,28 +131,36 @@ export default function DashboardPage() {
                         animate={{opacity: 1}}
                         exit={{opacity: 0}}
                         transition={{duration: 0.3}}
-                        className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+                        className="h-full"
                     >
-                        {/* Left column: AI Daily Plan */}
-                        <div className="lg:col-span-2">
-                            <AIDailyPlan 
-                                goals={goals}
-                                aiPlan={dayData?.aiPlan || null}
-                            />
-                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 h-full">
+                            {/* Left panel with Progress Summary and Timeline */}
+                            <div className="md:col-span-5 flex flex-col gap-4 h-full">
+                                <div className="flex-shrink-0 max-h-[230px]">
+                                    <DailyProgressSummary
+                                        streak={currentStreak}
+                                        goalsCompleted={completedGoals}
+                                        totalGoals={totalGoals}
+                                        onCloseDay={handleCloseDay}
+                                    />
+                                </div>
 
-                        {/* Right column: Progress and Timeline */}
-                        <div className="space-y-6">
-                            <DailyProgressSummary
-                                streak={currentStreak}
-                                goalsCompleted={completedGoals}
-                                totalGoals={totalGoals}
-                                onCloseDay={handleCloseDay}
-                            />
+                                <div className="flex-grow min-h-0 overflow-hidden">
+                                    <LogTimeline
+                                        activities={dayData?.activities || []}
+                                    />
+                                </div>
+                            </div>
 
-                            <LogTimeline 
-                                activities={dayData?.activities || []}
-                            />
+                            {/* Right panel with AI Daily Plan */}
+                            <div className="md:col-span-7 flex h-full">
+                                <div className="w-full">
+                                    <AIDailyPlan
+                                        goals={goals}
+                                        aiPlan={dayData?.aiPlan || null}
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </motion.div>
                 )}

@@ -22,17 +22,18 @@ export default function DailyProgressSummary({
 
   return (
     <Card className="border-none shadow-lg h-full">
-      <CardHeader className="pb-2 pt-6 px-6">
-        <CardTitle className="text-xl font-bold">Today's Progress</CardTitle>
+      <CardHeader className="pb-0 pt-3 px-4">
+        <CardTitle className="text-lg font-bold">Today's Progress</CardTitle>
       </CardHeader>
-      <CardContent className="p-6 space-y-6">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
-          className="flex items-center justify-center"
-        >
-          <div className="relative w-32 h-32">
+      <CardContent className="p-3 space-y-3">
+        <div className="flex items-center gap-4">
+          {/* Circular progress */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+            className="relative w-24 h-24 flex-shrink-0"
+          >
             <svg className="w-full h-full" viewBox="0 0 100 100">
               <circle
                 className="text-muted stroke-current"
@@ -57,30 +58,35 @@ export default function DailyProgressSummary({
                 transform="rotate(-90 50 50)"
               />
             </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-3xl font-bold">{goalPercentage}%</span>
-              <span className="text-xs text-muted-foreground">Completed</span>
+            <div className="absolute inset-0 flex flex-col items-center justify-center px-1">
+              <div className="text-center w-full">
+                <div className="text-2xl font-bold leading-none">{goalPercentage}%</div>
+                <div className="text-[9px] text-muted-foreground mt-0.5">Completed</div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Goals and streak */}
+          <div className="space-y-2 flex-grow">
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-medium">Goals</span>
+                <span className="text-xs font-medium">
+                  {goalsCompleted}/{totalGoals}
+                </span>
+              </div>
+              <Progress value={goalPercentage} className="h-1.5" />
+            </div>
+
+            <div className="flex items-center gap-1">
+              <Flame className="h-3.5 w-3.5 text-orange-500" />
+              <span className="text-xs font-medium">{streak} day streak</span>
             </div>
           </div>
-        </motion.div>
-
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Goals</span>
-            <span className="text-sm font-medium">
-              {goalsCompleted}/{totalGoals}
-            </span>
-          </div>
-          <Progress value={goalPercentage} className="h-2" />
         </div>
 
-        <div className="flex items-center justify-center gap-2 py-2">
-          <Flame className="h-4 w-4 text-orange-500" />
-          <span className="text-sm font-medium">{streak} day streak</span>
-        </div>
-
-        <Button className="w-full" size="lg" onClick={onCloseDay}>
-          <Moon className="mr-2 h-4 w-4" /> Close Day
+        <Button className="w-full text-sm" size="sm" onClick={onCloseDay}>
+          <Moon className="mr-1 h-3.5 w-3.5" /> Close Day
         </Button>
       </CardContent>
     </Card>
