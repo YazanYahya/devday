@@ -14,6 +14,8 @@ DevDay helps developers:
 
 Whether you're aiming to get promoted, learn a new tech stack, or improve your workflow, **DevDay** is your personal assistant to stay focused and on track every day.
 
+![DevDay Landing Page](/public/screenshots/landing.png)
+
 ---
 
 ## 🚀 Key Features
@@ -52,3 +54,23 @@ npm install
 
 # Start the dev server
 npm run dev
+
+```
+
+---
+
+## 📸 Screenshots
+
+Here are some screenshots of DevDay in action:
+
+### Starting Your Day
+![Start Day Interface](/public/screenshots/start-day.png)
+
+### Goal Setting and Tracking
+![Goals Interface](/public/screenshots/goals.png)
+
+### Adding Activity Logs
+![Add Log Interface](/public/screenshots/add-log.png)
+
+### AI-Generated Daily Plan
+![AI Plan Interface](/public/screenshots/ai-plan.png)
