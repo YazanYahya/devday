@@ -1,26 +1,225 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@layer base {
+    :root {
+        /* Base colors */
+        --background: 0 0% 100%;
+        --foreground: 240 10% 3.9%;
+
+        --card: 0 0% 100%;
+        --card-foreground: 240 10% 3.9%;
+
+        --popover: 0 0% 100%;
+        --popover-foreground: 240 10% 3.9%;
+
+        /* Primary: Deep Violet - AI-focused primary color */
+        --primary: 256 56% 46%;
+        --primary-foreground: 0 0% 100%;
+
+        /* Secondary: Soft Lavender */
+        --secondary: 250 30% 96%;
+        --secondary-foreground: 256 56% 30%;
+
+        /* Muted: Soft Gray with slight purple tint */
+        --muted: 240 4.8% 95.9%;
+        --muted-foreground: 240 3.8% 46.1%;
+
+        /* Accent: Soft Teal - complementary to purple */
+        --accent: 240 4.8% 95.9%;
+        --accent-foreground: 240 5.9% 10%;
+
+        /* Destructive: Red */
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 0 0% 100%;
+
+        /* Border, Input, Ring */
+        --border: 240 5.9% 90%;
+        --input: 240 5.9% 90%;
+        --ring: 256 56% 46%;
+
+        /* Semantic colors */
+        --success: 142 76% 36%;
+        --success-foreground: 0 0% 100%;
+
+        --warning: 38 92% 50%;
+        --warning-foreground: 0 0% 100%;
+
+        --info: 198 93% 60%;
+        --info-foreground: 0 0% 100%;
+
+        /* AI-specific colors */
+        --ai: 266 83% 60%;
+        --ai-foreground: 0 0% 100%;
+        --ai-muted: 266 30% 96%;
+
+        --radius: 0.75rem;
+    }
+
+    .dark {
+        /* Base colors */
+        --background: 240 10% 3.9%;
+        --foreground: 0 0% 98%;
+
+        --card: 240 10% 3.9%;
+        --card-foreground: 0 0% 98%;
+
+        --popover: 240 10% 3.9%;
+        --popover-foreground: 0 0% 98%;
+
+        /* Primary: Brighter Violet for dark mode */
+        --primary: 256 56% 56%;
+        --primary-foreground: 0 0% 100%;
+
+        /* Secondary: Deeper Lavender */
+        --secondary: 250 30% 16%;
+        --secondary-foreground: 250 30% 96%;
+
+        /* Muted: Dark Gray with purple tint */
+        --muted: 240 3.7% 15.9%;
+        --muted-foreground: 240 5% 64.9%;
+
+        /* Accent: Deeper Teal */
+        --accent: 240 3.7% 15.9%;
+        --accent-foreground: 0 0% 98%;
+
+        /* Destructive: Darker Red */
+        --destructive: 0 62% 30%;
+        --destructive-foreground: 0 0% 100%;
+
+        /* Border, Input, Ring */
+        --border: 240 3.7% 15.9%;
+        --input: 240 3.7% 15.9%;
+        --ring: 256 56% 56%;
+
+        /* Semantic colors */
+        --success: 142 69% 29%;
+        --success-foreground: 0 0% 100%;
+
+        --warning: 38 92% 40%;
+        --warning-foreground: 0 0% 100%;
+
+        --info: 198 93% 48%;
+        --info-foreground: 0 0% 100%;
+
+        /* AI-specific colors */
+        --ai: 266 83% 70%;
+        --ai-foreground: 0 0% 100%;
+        --ai-muted: 266 30% 16%;
+    }
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    html {
+        font-family: "Inter", system-ui, sans-serif;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+        font-feature-settings: "rlig" 1, "calt" 1;
+    }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Custom scrollbar for a more polished look */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.2);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.3);
+}
+
+/* Animations */
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.slide-up {
+    animation: slideUp 0.3s ease-in-out;
+}
+
+.slide-in-right {
+    animation: slideInRight 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(10px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(10px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Card styles */
+.card-hover {
+    transition: all 0.2s ease-in-out;
+}
+
+.card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+}
+
+/* AI glow effect */
+.ai-glow {
+    position: relative;
+}
+
+.ai-glow::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    background: linear-gradient(45deg, hsl(var(--primary) / 0.2), hsl(var(--ai) / 0.2), hsl(var(--primary) / 0.2));
+    border-radius: calc(var(--radius) + 1px);
+    z-index: -1;
+    animation: glowPulse 3s infinite alternate;
+}
+
+@keyframes glowPulse {
+    0% {
+        opacity: 0.5;
+        filter: blur(8px);
+    }
+    100% {
+        opacity: 0.8;
+        filter: blur(12px);
+    }
 }
