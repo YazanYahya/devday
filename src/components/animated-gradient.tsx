@@ -2,6 +2,19 @@
 
 import { useEffect, useRef } from "react"
 
+// Define the Circle type
+interface Circle {
+  x: number
+  y: number
+  radius: number
+  color: string
+  vx: number
+  vy: number
+  initialRadius: number
+  pulseSpeed: number
+  pulsePhase: number
+}
+
 export default function AnimatedGradient() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
@@ -18,7 +31,7 @@ export default function AnimatedGradient() {
     canvas.width = width
     canvas.height = height
 
-    const circles = []
+    const circles: Circle[] = []
     const colors = [
       "rgba(59, 130, 246, 0.4)", // Blue
       "rgba(99, 102, 241, 0.4)", // Indigo

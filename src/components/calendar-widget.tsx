@@ -45,8 +45,8 @@ export default function CalendarWidget() {
   const calendarDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd })
 
   // Group days into weeks
-  const weeks = []
-  let week = []
+  const weeks: Date[][] = []
+  let week: Date[] = []
 
   calendarDays.forEach((day) => {
     week.push(day)
