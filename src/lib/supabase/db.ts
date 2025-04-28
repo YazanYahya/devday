@@ -259,4 +259,27 @@ export const aiPlanService = {
             .delete()
             .eq('id', planItemId);
     }
+};
+
+// Database utility functions for Waitlist
+export const waitlistService = {
+    // Add email to waitlist
+    async addToWaitlist(supabase: SupabaseClientType, email: string) {
+        return supabase
+            .from('waitlist')
+            .insert({ email })
+            .select()
+            .single();
+    },
+
+    // Check if email exists in waitlist
+    async checkEmailExists(supabase: SupabaseClientType, email: string) {
+        const { data } = await supabase
+            .from('waitlist')
+            .select('id')
+            .eq('email', email)
+            .maybeSingle();
+        
+        return data !== null;
+    }
 }; 

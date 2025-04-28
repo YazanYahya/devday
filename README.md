@@ -1,6 +1,6 @@
 # DevDay
 
-**DevDay** is a full-stack productivity web app designed specifically for software developers to track their **daily progress**, **personal growth**, and **long-term goals** — with the help of AI.
+[**DevDay**](https://devday.app) is a full-stack productivity web app designed specifically for software developers to track their **daily progress**, **personal growth**, and **long-term goals** — with the help of AI.
 
 ## 🌟 Overview
 

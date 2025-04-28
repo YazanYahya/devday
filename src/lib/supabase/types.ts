@@ -141,6 +141,15 @@ export type ActivityInsert = Omit<Activity, 'id' | 'created_at' | 'updated_at'>;
 // Type for updating an activity
 export type ActivityUpdate = Partial<Omit<Activity, 'id'>> & { id: string };
 
+export type WaitlistEntry = {
+    id: string;
+    email: string;
+    created_at: string;
+    updated_at: string;
+};
+
+export type WaitlistInsert = Omit<WaitlistEntry, 'id' | 'created_at' | 'updated_at'>;
+
 // Database schema type definition for Supabase
 export interface Database {
     devday: {
@@ -169,6 +178,11 @@ export interface Database {
                 Row: Activity;
                 Insert: ActivityInsert;
                 Update: ActivityUpdate;
+            };
+            waitlist: {
+                Row: WaitlistEntry;
+                Insert: WaitlistInsert;
+                Update: WaitlistInsert;
             };
         };
         Views: {};

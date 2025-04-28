@@ -4,8 +4,9 @@ import {useEffect, useRef, useState} from "react"
 import Link from "next/link"
 import Image from "next/image"
 import {motion, useInView, useScroll, useTransform} from "framer-motion"
-import {ArrowRight, BarChart2, Calendar, CheckCircle, Clock, Sparkles, Target} from "lucide-react"
+import {ArrowRight, BarChart2, Calendar, CheckCircle, Clock, Mail, Sparkles, Target} from "lucide-react"
 import {Button} from "@/src/components/ui/button"
+import {Input} from "@/src/components/ui/input"
 import {cn} from "@/src/utils/utils"
 import FeatureCard from "@/src/components/feature-card"
 import AnimatedGradient from "@/src/components/animated-gradient"
@@ -15,6 +16,9 @@ export default function Home() {
     const heroRef = useRef(null)
     const featuresRef = useRef(null)
     const ctaRef = useRef(null)
+    const [email, setEmail] = useState("")
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [submitMessage, setSubmitMessage] = useState("")
 
     const featuresInView = useInView(featuresRef, {once: true, amount: 0.2})
     const ctaInView = useInView(ctaRef, {once: true, amount: 0.5})
@@ -27,6 +31,38 @@ export default function Home() {
     const heroOpacity = useTransform(scrollYProgress, [0, 1], [1, 0.3])
     const heroScale = useTransform(scrollYProgress, [0, 1], [1, 0.9])
     const heroY = useTransform(scrollYProgress, [0, 1], [0, 100])
+
+    const isWaitlistEnabled = process.env.NEXT_PUBLIC_WAITLIST_ENABLED === 'true';
+
+    const handleWaitlistSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        if (!email || isSubmitting) return
+        setIsSubmitting(true)
+        setSubmitMessage("")
+
+        try {
+            const response = await fetch('/api/waitlist', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email }),
+            });
+
+            if (response.ok) {
+                setSubmitMessage("Success! You're on the waitlist.")
+                setEmail("")
+            } else {
+                const errorData = await response.json();
+                setSubmitMessage(errorData.message || "An error occurred. Please try again.")
+            }
+        } catch (error) {
+            console.error("Waitlist submission error:", error);
+            setSubmitMessage("An error occurred. Please try again.")
+        } finally {
+            setIsSubmitting(false)
+        }
+    };
 
     useEffect(() => {
         const handleScroll = () => {
@@ -50,27 +86,30 @@ export default function Home() {
                         <Target className="h-6 w-6 text-primary"/>
                         <span className="text-xl font-bold">DevDay</span>
                     </div>
-                    <div className="hidden md:flex items-center gap-8">
-                        <div className="flex items-center gap-4">
-                            <Link href="/login">
-                                <Button variant="ghost">Log in</Button>
-                            </Link>
-                            <Link href="/signup">
-                                <Button className="bg-primary/90 hover:bg-primary transition-colors">Sign up</Button>
-                            </Link>
-                        </div>
-                    </div>
-                    <div className="md:hidden flex items-center gap-4">
-                        <Link href="/login">
-                            <Button variant="ghost" size="sm">
-                                Log in
-                            </Button>
-                        </Link>
-                        <Link href="/signup">
-                            <Button size="sm" className="bg-primary/90 hover:bg-primary transition-colors">Sign
-                                up</Button>
-                        </Link>
-                    </div>
+                    {!isWaitlistEnabled ? (
+                         <>
+                            <div className="hidden md:flex items-center gap-8">
+                                <div className="flex items-center gap-4">
+                                    <Link href="/login">
+                                        <Button variant="ghost">Log in</Button>
+                                    </Link>
+                                    <Link href="/signup">
+                                        <Button className="bg-primary/90 hover:bg-primary transition-colors">Sign up</Button>
+                                    </Link>
+                                </div>
+                            </div>
+                            <div className="md:hidden flex items-center gap-4">
+                                <Link href="/login">
+                                    <Button variant="ghost" size="sm">
+                                        Log in
+                                    </Button>
+                                </Link>
+                                <Link href="/signup">
+                                    <Button size="sm" className="bg-primary/90 hover:bg-primary transition-colors">Sign up</Button>
+                                </Link>
+                            </div>
+                        </>
+                    ) : null}
                 </div>
             </header>
 
@@ -91,7 +130,7 @@ export default function Home() {
                         >
                             <div
                                 className="inline-block px-4 py-1.5 mb-6 rounded-full bg-primary/10 text-primary font-medium text-sm">
-                                Developer Productivity Platform
+                                {isWaitlistEnabled ? 'Join the Waitlist' : 'Developer Productivity Platform'}
                             </div>
                             <h1 className="mb-6 text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl bg-clip-text text-transparent bg-gradient-to-r from-foreground via-foreground to-foreground/80">
                                 Empower Your <span className="text-primary">Dev Day</span> with AI
@@ -101,25 +140,63 @@ export default function Home() {
                                 AI-powered insights.
                             </p>
 
-                            <motion.div
-                                className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4"
-                                initial={{opacity: 0, y: 20}}
-                                animate={{opacity: 1, y: 0}}
-                                transition={{duration: 0.6, delay: 0.2}}
-                            >
-                                <Link href="/signup">
-                                    <Button size="lg"
-                                            className="gap-2 h-12 px-8 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all">
-                                        Get Started <ArrowRight className="h-4 w-4"/>
+                            {isWaitlistEnabled ? (
+                                /* Waitlist Form */
+                                <motion.form
+                                    onSubmit={handleWaitlistSubmit}
+                                    className="flex flex-col sm:flex-row justify-center lg:justify-start gap-3 w-full max-w-md mx-auto lg:mx-0"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.6, delay: 0.2 }}
+                                >
+                                    <div className="relative flex-grow">
+                                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                        <Input
+                                            type="email"
+                                            placeholder="Enter your email address"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            required
+                                            disabled={isSubmitting}
+                                            className="pl-10 pr-4 py-3 h-12 w-full text-base border-border focus:border-primary focus:ring-primary"
+                                        />
+                                    </div>
+                                    <Button
+                                        type="submit"
+                                        size="lg"
+                                        disabled={isSubmitting}
+                                        className="gap-2 h-12 px-6 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all w-full sm:w-auto"
+                                    >
+                                        {isSubmitting ? "Joining..." : "Join Waitlist"}
+                                        {!isSubmitting && <ArrowRight className="h-4 w-4" />}
                                     </Button>
-                                </Link>
-                                <Link href="#features">
-                                    <Button size="lg" variant="outline"
-                                            className="h-12 px-8 border-primary/20 hover:border-primary/40 transition-all">
-                                        See Features
-                                    </Button>
-                                </Link>
-                            </motion.div>
+                                </motion.form>
+                            ) : (
+                                <motion.div
+                                    className="flex flex-col sm:flex-row justify-center lg:justify-start gap-4"
+                                    initial={{opacity: 0, y: 20}}
+                                    animate={{opacity: 1, y: 0}}
+                                    transition={{duration: 0.6, delay: 0.2}}
+                                >
+                                    <Link href="/signup">
+                                        <Button size="lg"
+                                                className="gap-2 h-12 px-8 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all">
+                                            Get Started <ArrowRight className="h-4 w-4"/>
+                                        </Button>
+                                    </Link>
+                                    <Link href="#features">
+                                        <Button size="lg" variant="outline"
+                                                className="h-12 px-8 border-primary/20 hover:border-primary/40 transition-all">
+                                            See Features
+                                        </Button>
+                                    </Link>
+                                </motion.div>
+                            )}
+                            {submitMessage && (
+                                <p className={`mt-4 text-sm ${submitMessage.startsWith('Success') ? 'text-green-600' : 'text-red-600'}`}>
+                                    {submitMessage}
+                                </p>
+                            )}
                         </motion.div>
 
                         <motion.div
@@ -219,29 +296,75 @@ export default function Home() {
                     animate={ctaInView ? {opacity: 1, y: 0} : {}}
                     transition={{duration: 0.6}}
                 >
-                    <div className="relative rounded-2xl overflow-hidden ai-glow">
-                        <div
-                            className="absolute inset-0 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/5 z-0"></div>
-                        <div className="relative z-10 p-8 md:p-12 text-center">
+                     {!isWaitlistEnabled ? (
+                        <div className="relative rounded-2xl overflow-hidden ai-glow">
                             <div
-                                className="inline-block px-4 py-1.5 mb-6 rounded-full bg-primary/10 text-primary font-medium text-sm">
-                                Start Today
-                            </div>
-                            <h2 className="mb-6 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">Ready to
-                                Accelerate Your Growth?</h2>
-                            <p className="mx-auto mb-8 max-w-2xl text-xl text-muted-foreground">
-                                Join other developers who are taking control of their career progression.
-                            </p>
-                            <div className="flex justify-center">
-                                <Link href="/signup">
-                                    <Button size="lg"
-                                            className="gap-2 h-12 px-8 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all">
-                                        Start Tracking Today <ArrowRight className="h-4 w-4"/>
-                                    </Button>
-                                </Link>
+                                className="absolute inset-0 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/5 z-0"></div>
+                            <div className="relative z-10 p-8 md:p-12 text-center">
+                                <div
+                                    className="inline-block px-4 py-1.5 mb-6 rounded-full bg-primary/10 text-primary font-medium text-sm">
+                                    Start Today
+                                </div>
+                                <h2 className="mb-6 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">Ready to
+                                    Accelerate Your Growth?</h2>
+                                <p className="mx-auto mb-8 max-w-2xl text-xl text-muted-foreground">
+                                    Join other developers who are taking control of their career progression.
+                                </p>
+                                <div className="flex justify-center">
+                                    <Link href="/signup">
+                                        <Button size="lg"
+                                                className="gap-2 h-12 px-8 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all">
+                                            Start Tracking Today <ArrowRight className="h-4 w-4"/>
+                                        </Button>
+                                    </Link>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    ) : (
+                        <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-muted/50 to-muted/30 border border-border p-8 md:p-12 text-center">
+                           <div className="flex flex-col items-center">
+                                <div
+                                    className="inline-block px-4 py-1.5 mb-6 rounded-full bg-primary/10 text-primary font-medium text-sm">
+                                    Coming Soon
+                                </div>
+                               <h2 className="mb-6 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">Get Early Access to DevDay</h2>
+                               <p className="mx-auto mb-8 max-w-2xl text-xl text-muted-foreground">
+                                   Sign up for the waitlist to be notified when we launch.
+                               </p>
+                               <form
+                                    onSubmit={handleWaitlistSubmit}
+                                    className="flex flex-col sm:flex-row justify-center gap-3 w-full max-w-md mx-auto"
+                               >
+                                    <div className="relative flex-grow">
+                                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                        <Input
+                                            type="email"
+                                            placeholder="Enter your email address"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            required
+                                            disabled={isSubmitting}
+                                            className="pl-10 pr-4 py-3 h-12 w-full text-base bg-background border-border focus:border-primary focus:ring-primary"
+                                        />
+                                    </div>
+                                    <Button
+                                        type="submit"
+                                        size="lg"
+                                        disabled={isSubmitting}
+                                        className="gap-2 h-12 px-6 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all w-full sm:w-auto"
+                                    >
+                                        {isSubmitting ? "Submitting..." : "Join Waitlist"}
+                                        {!isSubmitting && <ArrowRight className="h-4 w-4" />}
+                                    </Button>
+                                </form>
+                               {submitMessage && (
+                                   <p className={`mt-4 text-sm ${submitMessage.startsWith('Success') ? 'text-green-600' : 'text-red-600'}`}>
+                                       {submitMessage}
+                                   </p>
+                               )}
+                           </div>
+                        </div>
+                    )}
                 </motion.div>
             </section>
 
